@@ -632,12 +632,14 @@
     }
   }
 
-  updateAuthButton();
-  window.supabaseClient.auth.onAuthStateChange(() => updateAuthButton());
-// Fix voor "Terug" / back button (bfcache): page kan uit cache komen zonder scripts opnieuw te runnen
-window.addEventListener("pageshow", () => {
+window.addEventListener("pageshow", (e) => {
+  if (e.persisted) {
+    location.reload(); // komt uit back-cache → echte reload
+    return;
+  }
   updateAuthButton();
   loadStories();
+});
 });
   </script>
 
