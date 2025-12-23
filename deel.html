@@ -5,15 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Deel jouw verhaal</title>
   <style>
-    body { font-family: system-ui, Arial; max-width: 900px; margin: 40px auto; padding: 16px; }
-    a { text-decoration:none; }
-    input, textarea, button { width:100%; padding:12px; border-radius:12px; border:1px solid #ddd; font: inherit; }
-    button { cursor:pointer; }
-    .row { display:grid; gap:12px; margin-top:16px; }
-    .msg { margin-top: 12px; white-space: pre-wrap; }
+    body {
+      font-family: system-ui, Arial;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 16px;
+    }
+    a { text-decoration: none; color: #6b21a8; }
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+      font: inherit;
+    }
+    button {
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .row {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .msg {
+      margin-top: 12px;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 <body>
+
   <p><a href="index.html">← Terug</a></p>
   <h1>Deel jouw verhaal</h1>
 
@@ -26,9 +48,9 @@
 
   <div id="msg" class="msg"></div>
 
-  <!-- 1) Eerst library -->
+  <!-- 1️⃣ Supabase library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- 2) Dan jouw client -->
+  <!-- 2️⃣ Jouw Supabase client -->
   <script src="supabase.js"></script>
 
   <script>
@@ -42,29 +64,37 @@
       btn.disabled = true;
 
       try {
-        if (!window.supabase) throw new Error("Supabase library is niet geladen (window.supabase ontbreekt).");
-        if (!supabase) throw new Error("Supabase client bestaat niet (supabase is undefined).");
+        if (!window.supabaseClient) {
+          throw new Error("Supabase client is niet geladen.");
+        }
 
         const title = document.getElementById("title").value.trim();
         const author = document.getElementById("author").value.trim();
         const content = document.getElementById("content").value.trim();
 
-        const { data, error } = await supabase
+        const { error } = await window.supabaseClient
           .from("stories")
-          .insert({ title, author_name: author || null, content })
-          .select();
+          .insert({
+            title,
+            author_name: author || null,
+            content
+          });
 
         if (error) throw error;
 
         msg.textContent = "✅ Gelukt! Je verhaal is geplaatst.";
-        setTimeout(() => (window.location.href = "index.html"), 800);
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 800);
+
       } catch (err) {
         console.error(err);
-        msg.textContent = "❌ Fout:\n" + (err?.message || String(err));
+        msg.textContent = "❌ Fout:\n" + (err.message || err);
       } finally {
         btn.disabled = false;
       }
     });
   </script>
+
 </body>
 </html>
