@@ -10,7 +10,7 @@
     input, textarea, button { width:100%; padding:12px; border-radius:12px; border:1px solid #ddd; font: inherit; }
     button { cursor:pointer; }
     .row { display:grid; gap:12px; margin-top:16px; }
-    .msg { margin-top: 12px; }
+    .msg { margin-top: 12px; white-space: pre-wrap; }
   </style>
 </head>
 <body>
@@ -21,37 +21,49 @@
     <input id="title" placeholder="Titel" required />
     <input id="author" placeholder="Jouw naam (optioneel)" />
     <textarea id="content" rows="10" placeholder="Jouw verhaal..." required></textarea>
-    <button type="submit">Plaatsen</button>
+    <button id="btn" type="submit">Plaatsen</button>
   </form>
 
   <div id="msg" class="msg"></div>
 
+  <!-- 1) Eerst library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- 2) Dan jouw client -->
   <script src="supabase.js"></script>
+
   <script>
     const form = document.getElementById("form");
     const msg = document.getElementById("msg");
+    const btn = document.getElementById("btn");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       msg.textContent = "Verhaal plaatsen...";
+      btn.disabled = true;
 
-      const title = document.getElementById("title").value.trim();
-      const author = document.getElementById("author").value.trim();
-      const content = document.getElementById("content").value.trim();
+      try {
+        if (!window.supabase) throw new Error("Supabase library is niet geladen (window.supabase ontbreekt).");
+        if (!supabase) throw new Error("Supabase client bestaat niet (supabase is undefined).");
 
-      const { error } = await supabase.from("stories").insert({
-        title,
-        author_name: author || null,
-        content
-      });
+        const title = document.getElementById("title").value.trim();
+        const author = document.getElementById("author").value.trim();
+        const content = document.getElementById("content").value.trim();
 
-      if (error) {
-        msg.textContent = "Fout: " + error.message;
-        return;
+        const { data, error } = await supabase
+          .from("stories")
+          .insert({ title, author_name: author || null, content })
+          .select();
+
+        if (error) throw error;
+
+        msg.textContent = "✅ Gelukt! Je verhaal is geplaatst.";
+        setTimeout(() => (window.location.href = "index.html"), 800);
+      } catch (err) {
+        console.error(err);
+        msg.textContent = "❌ Fout:\n" + (err?.message || String(err));
+      } finally {
+        btn.disabled = false;
       }
-
-      msg.textContent = "Gelukt! Terug naar de homepage...";
-      setTimeout(() => (window.location.href = "index.html"), 800);
     });
   </script>
 </body>
