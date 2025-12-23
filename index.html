@@ -617,31 +617,32 @@
         msgEl.textContent = "❌ " + (err?.message || String(err));
       }
     }
-  async function updateAuthButton(){
-    const authBtn = document.getElementById("authBtn");
-    if (!authBtn || !window.supabaseClient) return;
+async function updateAuthButton() {
+  const authBtn = document.getElementById("authBtn");
+  if (!authBtn || !window.supabaseClient) return;
 
-    const { data: { user } } = await window.supabaseClient.auth.getUser();
+  const { data: { user } } = await window.supabaseClient.auth.getUser();
 
-    if (user) {
-      authBtn.textContent = "Profiel";
-      authBtn.href = "profile.html";
-    } else {
-authBtn.href = "./profile.html";
-authBtn.href = "./login.html";
-    }
+  if (user) {
+    authBtn.textContent = "Profiel";
+    authBtn.href = "./profile.html";
+  } else {
+    authBtn.textContent = "Inloggen";
+    authBtn.href = "./login.html";
   }
+}
+
+updateAuthButton();
+window.supabaseClient.auth.onAuthStateChange(() => updateAuthButton());
 
 window.addEventListener("pageshow", (e) => {
   if (e.persisted) {
-    location.reload(); // komt uit back-cache → echte reload
+    location.reload();
     return;
   }
   updateAuthButton();
   loadStories();
 });
-});
   </script>
-
 </body>
 </html>
