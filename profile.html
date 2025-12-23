@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Profiel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;font-family:Inter,system-ui;background:#0b1020;color:#eef2ff}
+    .wrap{max-width:720px;margin:40px auto;padding:16px}
+    .card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:16px}
+    input,textarea,button{width:100%;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);font:inherit}
+    input,textarea{background:rgba(255,255,255,.06);color:#eef2ff}
+    textarea{min-height:110px;resize:vertical}
+    button{cursor:pointer;margin-top:10px;background:linear-gradient(135deg,rgba(139,92,246,.9),rgba(34,211,238,.75));color:#fff;border:1px solid rgba(139,92,246,.35)}
+    .ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+    .msg{margin-top:10px;white-space:pre-wrap;color:rgba(238,242,255,.75)}
+    a{color:#c4b5fd;text-decoration:none}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .row > div{flex:1;min-width:240px}
+    label{display:block;margin-top:10px;margin-bottom:6px;color:rgba(238,242,255,.75);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <p style="margin:0"><a href="index.html">← Terug</a></p>
+      <button class="ghost" id="logout" style="width:auto;padding:10px 12px;border-radius:14px">Uitloggen</button>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h1 style="margin:0 0 6px">Mijn profiel</h1>
+      <p id="who" style="margin:0 0 14px;color:rgba(238,242,255,.75)"></p>
+
+      <div class="row">
+        <div>
+          <label>Gebruikersnaam</label>
+          <input id="username" placeholder="bijv. adriana" />
+        </div>
+        <div>
+          <label>Naam</label>
+          <input id="full_name" placeholder="Jouw naam" />
+        </div>
+      </div>
+
+      <label>Bio</label>
+      <textarea id="bio" placeholder="Korte bio..."></textarea>
+
+      <button id="save">Opslaan</button>
+      <div id="msg" class="msg"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <script>
+    const msg = document.getElementById("msg");
+    const who = document.getElementById("who");
+
+    async function requireUser(){
+      const { data: { user } } = await window.supabaseClient.auth.getUser();
+      if (!user) location.href = "login.html";
+      who.textContent = "Ingelogd als: " + user.email;
+      return user;
+    }
+
+    async function loadProfile(user){
+      msg.textContent = "Profiel laden...";
+      const { data, error } = await window.supabaseClient
+        .from("profiles")
+        .select("username,full_name,bio")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) { msg.textContent = "❌ " + error.message; return; }
+      document.getElementById("username").value = data?.username || "";
+      document.getElementById("full_name").value = data?.full_name || "";
+      document.getElementById("bio").value = data?.bio || "";
+      msg.textContent = "";
+    }
+
+    async function saveProfile(user){
+      msg.textContent = "Opslaan...";
+      const payload = {
+        id: user.id,
+        username: document.getElementById("username").value.trim() || null,
+        full_name: document.getElementById("full_name").value.trim() || null,
+        bio: document.getElementById("bio").value.trim() || null,
+      };
+
+      const { error } = await window.supabaseClient.from("profiles").upsert(payload);
+      if (error) { msg.textContent = "❌ " + error.message; return; }
+
+      msg.textContent = "✅ Opgeslagen!";
+      setTimeout(()=>msg.textContent="", 1200);
+    }
+
+    document.getElementById("save").onclick = async () => {
+      const user = await requireUser();
+      await saveProfile(user);
+    };
+
+    document.getElementById("logout").onclick = async () => {
+      await window.supabaseClient.auth.signOut();
+      location.href = "index.html";
+    };
+
+    (async () => {
+      const user = await requireUser();
+      await loadProfile(user);
+    })();
+  </script>
+</body>
+</html>
