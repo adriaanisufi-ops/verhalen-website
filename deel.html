@@ -1,113 +1,163 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Deel jouw verhaal</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    body {
-      font-family: system-ui, Arial;
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 16px;
+    :root {
+      --bg:#0b1020;
+      --card:rgba(255,255,255,.08);
+      --text:#eef2ff;
+      --muted:rgba(238,242,255,.7);
+      --accent:#8b5cf6;
+      --accent2:#22d3ee;
+      --border:rgba(255,255,255,.14);
+      --radius:18px;
     }
-    a { text-decoration: none; color: #6b21a8; }
-    input, textarea, button {
-      width: 100%;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid #ddd;
-      font: inherit;
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(139,92,246,.25), transparent 55%),
+        radial-gradient(900px 500px at 85% 20%, rgba(34,211,238,.2), transparent 55%),
+        var(--bg);
     }
-    button {
-      cursor: pointer;
-      margin-top: 8px;
+    a{color:var(--accent);text-decoration:none}
+    .wrap{max-width:820px;margin:0 auto;padding:24px}
+    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:18px;
+      backdrop-filter:blur(8px)
     }
-    .row {
-      display: grid;
-      gap: 12px;
-      margin-top: 16px;
+    h1{margin:0 0 12px}
+    label{display:block;margin:14px 0 6px;font-size:14px;color:var(--muted)}
+    input,textarea,select{
+      width:100%;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.25);
+      color:var(--text);
+      font-family:inherit;
+      font-size:15px
     }
-    .msg {
-      margin-top: 12px;
-      white-space: pre-wrap;
+    textarea{min-height:160px;resize:vertical}
+    button{
+      margin-top:18px;
+      width:100%;
+      padding:14px;
+      border-radius:16px;
+      border:none;
+      cursor:pointer;
+      font-size:16px;
+      font-weight:600;
+      color:white;
+      background:linear-gradient(135deg,var(--accent),var(--accent2))
     }
+    .status{margin-top:12px;font-size:14px;color:var(--muted)}
+    .error{margin-top:10px;color:#f87171;font-size:14px}
   </style>
 </head>
+
 <body>
+  <div class="wrap">
+    <div class="top">
+      <a href="index.html">← Terug</a>
+    </div>
 
-  <p><a href="index.html">← Terug</a></p>
-  <h1>Deel jouw verhaal</h1>
+    <div class="card">
+      <h1>Deel jouw verhaal</h1>
 
-  <form id="form" class="row">
-    <input id="title" placeholder="Titel" required />
-    <input id="author" placeholder="Jouw naam (optioneel)" />
-    <textarea id="content" rows="10" placeholder="Jouw verhaal..." required></textarea>
-    <button id="btn" type="submit">Plaatsen</button>
-  </form>
+      <form id="storyForm">
+        <label for="author">Wie ben je?</label>
+        <input id="author" type="text" placeholder="Naam (optioneel)" />
 
-  <div id="msg" class="msg"></div>
+        <label for="title">Titel</label>
+        <input id="title" type="text" required />
 
-  <!-- 1️⃣ Supabase library -->
+        <label for="content">Verhaal</label>
+        <textarea id="content" required></textarea>
+
+        <label for="category">Categorie</label>
+        <select id="category">
+          <option value="Algemeen">Algemeen</option>
+          <option value="Persoonlijk">Persoonlijk</option>
+          <option value="Filosofie">Filosofie</option>
+          <option value="Poëzie">Poëzie</option>
+        </select>
+
+        <label for="tags">Tags (komma gescheiden)</label>
+        <input id="tags" type="text" placeholder="bijv. groei, leven, angst" />
+
+        <button type="submit">Plaatsen</button>
+      </form>
+
+      <div id="status" class="status"></div>
+      <div id="error" class="error"></div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- 2️⃣ Jouw Supabase client -->
   <script src="supabase.js"></script>
 
   <script>
-    const form = document.getElementById("form");
-    const msg = document.getElementById("msg");
-    const btn = document.getElementById("btn");
+    const form = document.getElementById("storyForm");
+    const statusEl = document.getElementById("status");
+    const errorEl = document.getElementById("error");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      msg.textContent = "Verhaal plaatsen...";
-      btn.disabled = true;
+      statusEl.textContent = "Plaatsen...";
+      errorEl.textContent = "";
 
       try {
         if (!window.supabaseClient) {
-          throw new Error("Supabase client is niet geladen.");
+          throw new Error("Supabase client niet geladen");
         }
 
+        const { data:{ user } } = await window.supabaseClient.auth.getUser();
+        if (!user) throw new Error("Je moet ingelogd zijn");
+
+        const author = document.getElementById("author").value.trim() || "Anoniem";
         const title = document.getElementById("title").value.trim();
-        const author = document.getElementById("author").value.trim();
         const content = document.getElementById("content").value.trim();
+        const category = document.getElementById("category").value || "Algemeen";
+        const tagsInput = document.getElementById("tags").value;
+        const tags = tagsInput ? tagsInput.split(",").map(t=>t.trim()).filter(Boolean) : [];
 
-       const { data: { user } } = await window.supabaseClient.auth.getUser();
-if (!user) {
-  msg.textContent = "❌ Je moet ingelogd zijn om te plaatsen.";
-  msg.classList.add("err");
-  btn.disabled = false;
-  return;
-}
-
-const { error } = await window.supabaseClient
-  .from("stories")
-  .insert({
-    user_id: user.id,
-    title,
-    category,
-    tags,
-    author_name: author,
-    content
-  });
-
-if (error) throw error;
+        const { error } = await window.supabaseClient
+          .from("stories")
+          .insert({
+            user_id: user.id,
+            title,
+            content,
+            author_name: author,
+            category,
+            tags
+          });
 
         if (error) throw error;
 
-        msg.textContent = "✅ Gelukt! Je verhaal is geplaatst.";
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 800);
+        statusEl.textContent = "✅ Verhaal geplaatst";
+        setTimeout(()=>location.href="index.html",600);
 
-      } catch (err) {
+      } catch(err){
         console.error(err);
-        msg.textContent = "❌ Fout:\n" + (err.message || err);
-      } finally {
-        btn.disabled = false;
+        errorEl.textContent = "❌ " + (err.message || String(err));
       }
     });
   </script>
-
 </body>
 </html>
