@@ -356,32 +356,71 @@
     }
 
     // ---------- main ----------
-    async function loadStories() {
-      const statusEl = document.getElementById("status");
-      const errorEl = document.getElementById("error");
-      errorEl.textContent = "DEBUG: supabaseClient = " + (window.supabaseClient ? "OK" : "MISSING");
-      const wrap = document.getElementById("stories");
+   async function loadStories(){
+  errorEl.textContent = "";
+  statusEl.textContent = "Verhalen laden…";
 
-      errorEl.textContent = "";
-      wrap.innerHTML = "";
-      statusEl.textContent = "Verhalen laden...";
+  try {
+    // DEBUG: laat zien of je ingelogd bent op index
+    const { data: uData, error: uErr } = await window.supabaseClient.auth.getUser();
+    const userEmail = uData?.user?.email || "(geen user)";
+    if (uErr) errorEl.textContent = "DEBUG auth error: " + uErr.message + "\n";
 
-      try {
-        if (!window.supabaseClient) throw new Error("Supabase client niet geladen. Controleer supabase.js.");
+    // DEBUG: haal stories op
+    const { data, error } = await window.supabaseClient
+      .from("stories")
+      .select("id,title,content,author_name,created_at,category,tags")
+      .order("created_at", { ascending:false })
+      .limit(50);
 
-        // 1) stories
-        const { data: stories, error: sErr } = await window.supabaseClient
-          .from("stories")
-          .select("id,title,author_name,created_at,content,category,tags")
-          .order("created_at", { ascending: false })
-          .limit(50);
+    if (error) {
+      errorEl.textContent +=
+        "DEBUG user: " + userEmail + "\n" +
+        "DEBUG stories error: " + error.message + "\n" +
+        (error.details ? ("details: " + error.details + "\n") : "") +
+        (error.hint ? ("hint: " + error.hint + "\n") : "");
+      statusEl.textContent = "";
+      return;
+    }
 
-        if (sErr) throw sErr;
+    // als geen data
+    if (!data || data.length === 0){
+      wrapEl.innerHTML = "";
+      statusEl.textContent = "Nog geen verhalen.";
+      return;
+    }
 
-        if (!stories || stories.length === 0) {
-          statusEl.textContent = "Nog geen verhalen. Wees de eerste!";
-          return;
-        }
+    // render
+    statusEl.textContent = "";
+    wrapEl.innerHTML = "";
+
+    for (const s of data){
+      const title = escapeHtml(s.title || "Zonder titel");
+      const author = escapeHtml(s.author_name || "Anoniem");
+      const created = formatDate(s.created_at);
+      const category = escapeHtml(s.category || "Algemeen");
+      const content = escapeHtml(s.content || "");
+
+      wrapEl.innerHTML += `
+        <div class="card">
+          <h2 class="title">${title}</h2>
+          <div class="meta">
+            <span>Door <b>${author}</b></span>
+            <span>•</span>
+            <span>${created}</span>
+            <span>•</span>
+            <span>Categorie: <b>${category}</b></span>
+          </div>
+          <div class="content">${content}</div>
+        </div>
+      `;
+    }
+
+  } catch (err) {
+    errorEl.textContent = "DEBUG crash: " + (err?.message || String(err));
+    statusEl.textContent = "";
+  }
+}
 
         statusEl.textContent = "";
 
