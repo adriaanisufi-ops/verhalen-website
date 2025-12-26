@@ -72,13 +72,26 @@
         const author = document.getElementById("author").value.trim();
         const content = document.getElementById("content").value.trim();
 
-        const { error } = await window.supabaseClient
-          .from("stories")
-          .insert({
-            title,
-            author_name: author || null,
-            content
-          });
+       const { data: { user } } = await window.supabaseClient.auth.getUser();
+if (!user) {
+  msg.textContent = "❌ Je moet ingelogd zijn om te plaatsen.";
+  msg.classList.add("err");
+  btn.disabled = false;
+  return;
+}
+
+const { error } = await window.supabaseClient
+  .from("stories")
+  .insert({
+    user_id: user.id,
+    title,
+    category,
+    tags,
+    author_name: author,
+    content
+  });
+
+if (error) throw error;
 
         if (error) throw error;
 
