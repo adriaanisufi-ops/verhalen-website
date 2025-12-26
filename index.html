@@ -5,15 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Verhalen</title>
 
-  <!-- Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
       --bg:#0b1020;
-      --bg2:#0f1732;
       --card: rgba(255,255,255,.06);
       --text:#eef2ff;
       --muted: rgba(238,242,255,.70);
@@ -21,307 +19,112 @@
       --accent:#8b5cf6;
       --accent2:#22d3ee;
       --danger:#fb7185;
+      --radius:18px;
       --shadow: 0 18px 60px rgba(0,0,0,.35);
-      --radius: 18px;
     }
-
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
     body{
       margin:0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      color: var(--text);
+      color:var(--text);
       background:
         radial-gradient(1200px 600px at 15% 10%, rgba(139,92,246,.30), transparent 55%),
         radial-gradient(900px 500px at 85% 20%, rgba(34,211,238,.22), transparent 55%),
-        linear-gradient(180deg, var(--bg), var(--bg2));
+        radial-gradient(900px 500px at 50% 90%, rgba(251,113,133,.10), transparent 60%),
+        var(--bg);
+      min-height:100vh;
     }
-
-    .container{
-      max-width: 980px;
-      margin: 26px auto;
-      padding: 0 14px 60px;
-    }
-
+    .container{max-width:980px;margin:0 auto;padding:22px 16px 60px}
     .topbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      padding: 14px 14px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      display:flex; gap:14px; align-items:center; justify-content:space-between;
+      padding:14px 16px; border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      border-radius:22px;
       box-shadow: var(--shadow);
       backdrop-filter: blur(10px);
     }
-
-    .brand-wrap{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width:0;
-    }
-
+    .brand-wrap{display:flex;align-items:center;gap:12px}
     .logo{
-      width:40px;
-      height:40px;
-      border-radius:50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: radial-gradient(circle at 30% 30%, rgba(139,92,246,.35), rgba(34,211,238,.15));
-      box-shadow:
-        0 0 20px rgba(139,92,246,.35),
-        0 0 40px rgba(34,211,238,.15);
-      flex: 0 0 auto;
+      width:38px;height:38px;border-radius:999px;
+      display:grid;place-items:center;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
     }
-
-    .logo svg{
-      border-radius:50%;
-      animation: spin 18s linear infinite;
-    }
-
-    @keyframes spin{
-      from{ transform: rotate(0deg); }
-      to{ transform: rotate(360deg); }
-    }
-
-    @media (prefers-reduced-motion: reduce){
-      .logo svg{ animation: none; }
-      .story{ animation: none !important; opacity: 1 !important; transform:none !important; }
-      .btn, .like{ transition:none !important; }
-    }
-
-    .brand{
-      display:flex; flex-direction:column; gap:4px;
-      min-width: 0;
-    }
-    .brand h1{
-      margin:0;
-      font-size: 20px;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-    }
-    .brand p{
-      margin:0;
-      color: var(--muted);
-      font-size: 13px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
+    .brand h1{margin:0;font-size:18px;line-height:1.1}
+    .brand p{margin:3px 0 0;color:var(--muted);font-size:13px}
+    .actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
     .btn{
-      appearance:none;
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 14px; border-radius:999px;
       border:1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 14px;
+      background:rgba(255,255,255,.06);
+      color:var(--text); text-decoration:none;
+      font-weight:600; font-size:14px;
       cursor:pointer;
-      font: inherit;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
-      user-select:none;
-      white-space: nowrap;
     }
-    .btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.09); }
-    .btn:active{ transform: translateY(0px); opacity:.92; }
-
+    .btn:hover{background:rgba(255,255,255,.09)}
     .btn-primary{
-      border-color: rgba(139,92,246,.35);
-      background: linear-gradient(135deg, rgba(139,92,246,.85), rgba(34,211,238,.70));
-      box-shadow: 0 10px 24px rgba(139,92,246,.18);
-    }
-    .btn-primary:hover{ background: linear-gradient(135deg, rgba(139,92,246,.95), rgba(34,211,238,.80)); }
-
-    .status{
-      margin: 14px 4px 0;
-      color: var(--muted);
-      font-size: 14px;
-    }
-    .error{
-      margin: 10px 4px 0;
-      color: var(--danger);
-      white-space: pre-wrap;
-      font-size: 14px;
+      border:1px solid rgba(139,92,246,.35);
+      background: linear-gradient(135deg, rgba(139,92,246,.95), rgba(34,211,238,.75));
+      box-shadow: 0 14px 40px rgba(139,92,246,.20);
     }
 
-    /* Cards */
-    .story{
-      margin-top: 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.05));
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      transform: translateY(10px);
-      opacity: 0;
-      animation: fadeUp .35s ease forwards;
+    .status{margin:14px 6px 0;color:var(--muted);font-size:14px}
+    .error{margin:10px 6px 0;color:var(--danger);font-weight:700;white-space:pre-wrap}
+    .grid{margin-top:16px;display:grid;gap:14px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:14px 14px 12px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.22);
+      backdrop-filter: blur(10px);
     }
-    @keyframes fadeUp{ to{ transform: translateY(0); opacity:1; } }
-
-    .story-head{ padding: 16px 16px 8px; }
-    .story h2{
-      margin:0;
-      font-size: 17px;
-      letter-spacing: -0.02em;
-      line-height: 1.25;
-    }
-
-    .meta{
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
-      display:flex;
-      gap:10px;
-      flex-wrap: wrap;
-      align-items:center;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      font-size: 12px;
-      color: var(--muted);
-    }
+    .meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;color:var(--muted);font-size:13px;margin-top:6px}
+    .title{margin:0;font-size:16px}
+    .content{margin:10px 0 0;white-space:pre-wrap;line-height:1.65}
+    .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
     .tag{
-      border-color: rgba(34,211,238,.28);
-      background: rgba(34,211,238,.10);
-      color: rgba(238,242,255,.85);
+      font-size:12px;color:rgba(238,242,255,.85);
+      padding:5px 9px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
     }
-    .cat{
-      border-color: rgba(139,92,246,.28);
-      background: rgba(139,92,246,.12);
-      color: rgba(238,242,255,.90);
-    }
-
-    .story-body{
-      padding: 0 16px 14px;
-      line-height: 1.75;
-      white-space: pre-wrap;
-      color: rgba(238,242,255,.92);
-    }
-
-    .story-actions{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-      padding: 12px 16px;
-      border-top: 1px solid var(--border);
-      background: rgba(255,255,255,.04);
-    }
-    .left-actions{ display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
-    .small{ font-size: 13px; color: var(--muted); }
-
-    /* Like button */
-    .like{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      cursor:pointer;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
-    }
-    .like:hover{ transform: translateY(-1px); background: rgba(255,255,255,.09); }
-    .like:active{ transform: translateY(0px); opacity:.92; }
-    .like.active{
-      border-color: rgba(251,113,133,.40);
-      background: rgba(251,113,133,.16);
-    }
-
-    /* Comments */
-    .comments{
-      display:none;
-      padding: 12px 16px 16px;
-      border-top: 1px solid var(--border);
-      background: rgba(255,255,255,.03);
-    }
-    .comments.open{ display:block; }
-
-    .comment{
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 12px;
-      margin-top: 10px;
-      background: rgba(255,255,255,.06);
-    }
-    .comment p{
-      margin: 8px 0 0;
-      white-space: pre-wrap;
-      line-height: 1.55;
-      color: rgba(238,242,255,.92);
-    }
-
-    .form{ margin-top: 12px; display:grid; gap:10px; }
-    input, textarea{
-      width:100%;
-      padding: 12px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      font: inherit;
-      outline: none;
-    }
-    input::placeholder, textarea::placeholder{ color: rgba(238,242,255,.55); }
-    textarea{ min-height: 110px; resize: vertical; }
-    .row{ display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap: wrap; }
-    .hint{ color: var(--muted); font-size: 13px; }
-
-    /* Mobile polish */
-    @media (max-width: 520px){
-      .container{ margin: 18px auto; }
-      .btn{ width: 100%; }
-      .topbar{ flex-direction: column; align-items: stretch; }
-      .story-head, .story-body, .story-actions, .comments{ padding-left: 12px; padding-right: 12px; }
-    }
+    .divider{height:1px;background:rgba(255,255,255,.10);margin:12px 0}
+    .mini{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:13px}
   </style>
 </head>
 
 <body>
   <div class="container">
+
     <div class="topbar">
       <div class="brand-wrap">
         <div class="logo" title="Yin & Yang">
-          <svg viewBox="0 0 100 100" width="36" height="36" aria-hidden="true">
+          <svg viewBox="0 0 100 100" width="26" height="26" aria-hidden="true">
             <circle cx="50" cy="50" r="48" fill="white"/>
-            <path d="M50 2
-                     a48 48 0 1 0 0 96
+            <path d="M50 2 a48 48 0 1 0 0 96
                      a24 24 0 1 1 0-48
                      a24 24 0 1 0 0-48" fill="black"/>
             <circle cx="50" cy="26" r="6" fill="white"/>
             <circle cx="50" cy="74" r="6" fill="black"/>
           </svg>
         </div>
-
         <div class="brand">
           <h1>Verhalen</h1>
           <p>Lees, deel, like en reageer — met respect.</p>
         </div>
       </div>
 
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end">   <a class="btn" id="authBtn" href="login.html">Inloggen</a>   <a class="btn btn-primary" href="deel.html">Deel jouw verhaal</a> </div>
+      <div class="actions">
+        <a class="btn" id="authBtn" href="./login.html">Inloggen</a>
+        <a class="btn btn-primary" href="./deel.html">Deel jouw verhaal</a>
+      </div>
     </div>
 
-    <div id="status" class="status">Verhalen laden...</div>
+    <div id="status" class="status">Verhalen laden…</div>
     <div id="error" class="error"></div>
-    <div id="stories"></div>
+    <div id="stories" class="grid"></div>
   </div>
 
   <!-- Supabase -->
@@ -329,360 +132,172 @@
   <script src="supabase.js"></script>
 
   <script>
-    // ---------- helpers ----------
+    const statusEl = document.getElementById("status");
+    const errorEl  = document.getElementById("error");
+    const wrapEl   = document.getElementById("stories");
+
     function escapeHtml(str){
       return (str ?? "").replace(/[&<>"']/g, (m) => ({
         "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
       }[m]));
     }
-    function fmtDate(ts){
-      try { return new Date(ts).toLocaleString("nl-NL"); }
-      catch { return ""; }
+
+    function formatDate(iso){
+      try{
+        return new Date(iso).toLocaleString("nl-NL", { dateStyle:"medium", timeStyle:"short" });
+      }catch(e){ return ""; }
     }
-    function ensureVisitorId(){
-      let id = localStorage.getItem("visitor_id");
-      if (!id) {
-        id = (crypto?.randomUUID?.() || ("v_" + Math.random().toString(16).slice(2) + Date.now()));
-        localStorage.setItem("visitor_id", id);
+
+    async function updateAuthButton() {
+      const authBtn = document.getElementById("authBtn");
+      if (!authBtn) return;
+
+      if (!window.supabaseClient) {
+        // als client niet geladen is, laat knop gewoon naar login gaan
+        authBtn.textContent = "Inloggen";
+        authBtn.href = "./login.html";
+        return;
       }
-      return id;
-    }
-    const VISITOR_ID = ensureVisitorId();
 
-    function normalizeTags(tags){
-      if (!tags) return [];
-      if (Array.isArray(tags)) return tags.filter(Boolean).map(t => String(t).trim()).filter(Boolean);
-      return String(tags).split(",").map(t => t.trim()).filter(Boolean);
-    }
+      const { data: { user }, error } = await window.supabaseClient.auth.getUser();
+      if (error) {
+        authBtn.textContent = "Inloggen";
+        authBtn.href = "./login.html";
+        return;
+      }
 
-    // ---------- main ----------
-   async function loadStories(){
-  errorEl.textContent = "";
-  statusEl.textContent = "Verhalen laden…";
-
-  try {
-    // DEBUG: laat zien of je ingelogd bent op index
-    const { data: uData, error: uErr } = await window.supabaseClient.auth.getUser();
-    const userEmail = uData?.user?.email || "(geen user)";
-    if (uErr) errorEl.textContent = "DEBUG auth error: " + uErr.message + "\n";
-
-    // DEBUG: haal stories op
-    const { data, error } = await window.supabaseClient
-      .from("stories")
-      .select("id,title,content,author_name,created_at,category,tags")
-      .order("created_at", { ascending:false })
-      .limit(50);
-
-    if (error) {
-      errorEl.textContent +=
-        "DEBUG user: " + userEmail + "\n" +
-        "DEBUG stories error: " + error.message + "\n" +
-        (error.details ? ("details: " + error.details + "\n") : "") +
-        (error.hint ? ("hint: " + error.hint + "\n") : "");
-      statusEl.textContent = "";
-      return;
-    }
-
-    // als geen data
-    if (!data || data.length === 0){
-      wrapEl.innerHTML = "";
-      statusEl.textContent = "Nog geen verhalen.";
-      return;
-    }
-
-    // render
-    statusEl.textContent = "";
-    wrapEl.innerHTML = "";
-
-    for (const s of data){
-      const title = escapeHtml(s.title || "Zonder titel");
-      const author = escapeHtml(s.author_name || "Anoniem");
-      const created = formatDate(s.created_at);
-      const category = escapeHtml(s.category || "Algemeen");
-      const content = escapeHtml(s.content || "");
-
-      wrapEl.innerHTML += `
-        <div class="card">
-          <h2 class="title">${title}</h2>
-          <div class="meta">
-            <span>Door <b>${author}</b></span>
-            <span>•</span>
-            <span>${created}</span>
-            <span>•</span>
-            <span>Categorie: <b>${category}</b></span>
-          </div>
-          <div class="content">${content}</div>
-        </div>
-      `;
-    }
-
-  } catch (err) {
-    errorEl.textContent = "DEBUG crash: " + (err?.message || String(err));
-    statusEl.textContent = "";
-  }
-}
-
-        statusEl.textContent = "";
-
-        // 2) likes for these stories
-        const storyIds = stories.map(s => s.id);
-
-        const { data: allLikes, error: lErr } = await window.supabaseClient
-          .from("likes")
-          .select("story_id,visitor_id")
-          .in("story_id", storyIds);
-
-        if (lErr) throw lErr;
-
-        const likeCounts = new Map();
-        const likedByMe = new Set();
-
-        (allLikes || []).forEach(l => {
-          likeCounts.set(l.story_id, (likeCounts.get(l.story_id) || 0) + 1);
-          if (l.visitor_id === VISITOR_ID) likedByMe.add(l.story_id);
-        });
-
-        // 3) render
-        stories.forEach((s, i) => {
-          const tags = normalizeTags(s.tags);
-          const category = (s.category || "Algemeen").trim();
-          const likes = likeCounts.get(s.id) || 0;
-          const isLiked = likedByMe.has(s.id);
-
-          const el = document.createElement("section");
-          el.className = "story";
-          el.style.animationDelay = (i * 28) + "ms";
-
-          el.innerHTML = `
-            <div class="story-head">
-              <h2>${escapeHtml(s.title)}</h2>
-              <div class="meta">
-                <span class="pill">🗓️ ${fmtDate(s.created_at)}</span>
-                ${s.author_name ? `<span class="pill">👤 ${escapeHtml(s.author_name)}</span>` : `<span class="pill">👤 Anoniem</span>`}
-                <span class="pill cat">🏷️ ${escapeHtml(category)}</span>
-                ${tags.slice(0, 10).map(t => `<span class="pill tag">#${escapeHtml(t)}</span>`).join("")}
-              </div>
-            </div>
-
-            <div class="story-body">${escapeHtml(s.content)}</div>
-
-            <div class="story-actions">
-              <div class="left-actions">
-                <button class="like ${isLiked ? "active" : ""}" data-action="toggle-like" data-story="${s.id}">
-                  <span>❤️</span>
-                  <span id="like-count-${s.id}">${likes}</span>
-                </button>
-
-                <button class="btn" data-action="toggle-comments" data-story="${s.id}">
-                  💬 Reacties
-                </button>
-
-                <span class="small" id="comment-count-${s.id}"></span>
-              </div>
-              <span class="small"></span>
-            </div>
-
-            <div class="comments" id="comments-${s.id}">
-              <div class="hint" id="cstatus-${s.id}">Reacties laden...</div>
-              <div id="clist-${s.id}"></div>
-
-              <form class="form" data-action="comment-form" data-story="${s.id}">
-                <input name="author" placeholder="Jouw naam (optioneel)" />
-                <textarea name="content" placeholder="Schrijf een reactie..." required></textarea>
-                <div class="row">
-                  <span class="hint" id="cmsg-${s.id}"></span>
-                  <button class="btn btn-primary" type="submit">Plaats reactie</button>
-                </div>
-              </form>
-            </div>
-          `;
-
-          wrap.appendChild(el);
-        });
-
-        // events (delegation)
-        wrap.addEventListener("click", async (e) => {
-          const likeBtn = e.target.closest("[data-action='toggle-like']");
-          if (likeBtn) {
-            const storyId = likeBtn.getAttribute("data-story");
-            await toggleLike(storyId, likeBtn);
-            return;
-          }
-
-          const cBtn = e.target.closest("[data-action='toggle-comments']");
-          if (cBtn) {
-            const storyId = cBtn.getAttribute("data-story");
-            const panel = document.getElementById(`comments-${storyId}`);
-            const isOpen = panel.classList.toggle("open");
-            cBtn.textContent = isOpen ? "🙈 Verbergen" : "💬 Reacties";
-            if (isOpen) await loadComments(storyId);
-            return;
-          }
-        });
-
-        wrap.addEventListener("submit", async (e) => {
-          const form = e.target.closest("[data-action='comment-form']");
-          if (!form) return;
-          e.preventDefault();
-          const storyId = form.getAttribute("data-story");
-          await submitComment(form, storyId);
-        });
-
-        // preload comment counts
-        storyIds.forEach(id => loadCommentCount(id));
-
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = "";
-        errorEl.textContent = "Fout:\n" + (err?.message || String(err));
+      if (user) {
+        authBtn.textContent = "Profiel";
+        authBtn.href = "./profile.html";
+      } else {
+        authBtn.textContent = "Inloggen";
+        authBtn.href = "./login.html";
       }
     }
 
-    // ---------- likes ----------
-    async function toggleLike(storyId, btnEl) {
-      const countEl = document.getElementById(`like-count-${storyId}`);
-      const wasLiked = btnEl.classList.contains("active");
-
-      // Optimistic UI
-      btnEl.classList.toggle("active");
-      const current = parseInt(countEl.textContent || "0", 10);
-      countEl.textContent = String(Math.max(0, current + (wasLiked ? -1 : 1)));
-
-      try {
-        if (wasLiked) {
-          const { error } = await window.supabaseClient
-            .from("likes")
-            .delete()
-            .eq("story_id", storyId)
-            .eq("visitor_id", VISITOR_ID);
-          if (error) throw error;
-        } else {
-          const { error } = await window.supabaseClient
-            .from("likes")
-            .insert({ story_id: storyId, visitor_id: VISITOR_ID });
-          if (error) throw error;
-        }
-      } catch (err) {
-        console.error(err);
-        // Revert UI
-        btnEl.classList.toggle("active");
-        countEl.textContent = String(current);
-        alert("Like lukt niet: " + (err?.message || String(err)));
-      }
-    }
-
-    // ---------- comments ----------
-    async function loadCommentCount(storyId){
+    async function safeCount(table, storyId){
       try{
         const { count, error } = await window.supabaseClient
-          .from("comments")
-          .select("id", { count: "exact", head: true })
+          .from(table)
+          .select("*", { count:"exact", head:true })
           .eq("story_id", storyId);
 
-        if (error) throw error;
-
-        const el = document.getElementById(`comment-count-${storyId}`);
-        if (el) el.textContent = `${count ?? 0} reactie(s)`;
-      } catch {}
+        if (error) return null;
+        return count ?? 0;
+      } catch {
+        return null;
+      }
     }
 
-    async function loadComments(storyId){
-      const statusEl = document.getElementById(`cstatus-${storyId}`);
-      const listEl = document.getElementById(`clist-${storyId}`);
-
-      statusEl.textContent = "Reacties laden...";
-      listEl.innerHTML = "";
+    async function loadStories(){
+      errorEl.textContent = "";
+      statusEl.textContent = "Verhalen laden…";
 
       try{
-        const { data, error } = await window.supabaseClient
-          .from("comments")
-          .select("id,author_name,content,created_at")
-          .eq("story_id", storyId)
-          .order("created_at", { ascending: true });
+        if (!window.supabaseClient) {
+          throw new Error("Supabase client niet geladen. Controleer supabase.js en of de URL/key kloppen.");
+        }
 
-        if (error) throw error;
+        // Debug: laat zien of je ingelogd bent
+        const { data: uData } = await window.supabaseClient.auth.getUser();
+        const userEmail = uData?.user?.email || "(niet ingelogd)";
+
+        const { data, error } = await window.supabaseClient
+          .from("stories")
+          .select("id,title,content,author_name,created_at,category,tags")
+          .order("created_at", { ascending:false })
+          .limit(50);
+
+        if (error) {
+          throw new Error(
+            "Stories query faalde.\n" +
+            "User: " + userEmail + "\n" +
+            "Error: " + error.message +
+            (error.details ? ("\nDetails: " + error.details) : "") +
+            (error.hint ? ("\nHint: " + error.hint) : "")
+          );
+        }
 
         if (!data || data.length === 0){
-          statusEl.textContent = "Nog geen reacties. Wees de eerste!";
+          wrapEl.innerHTML = "";
+          statusEl.textContent = "Nog geen verhalen. Klik op ‘Deel jouw verhaal’ om de eerste te plaatsen.";
           return;
         }
 
         statusEl.textContent = "";
-        data.forEach(c => {
-          const div = document.createElement("div");
-          div.className = "comment";
-          div.innerHTML = `
+        wrapEl.innerHTML = "";
+
+        for (const s of data){
+          const tags = Array.isArray(s.tags) ? s.tags : [];
+          const tagsHtml = tags.length
+            ? `<div class="tags">${tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join("")}</div>`
+            : "";
+
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <h2 class="title">${escapeHtml(s.title || "Zonder titel")}</h2>
             <div class="meta">
-              <span class="pill">🗓️ ${fmtDate(c.created_at)}</span>
-              ${c.author_name ? `<span class="pill">👤 ${escapeHtml(c.author_name)}</span>` : `<span class="pill">👤 Anoniem</span>`}
+              <span>Door <b>${escapeHtml(s.author_name || "Anoniem")}</b></span>
+              <span>•</span>
+              <span>${formatDate(s.created_at)}</span>
+              <span>•</span>
+              <span>Categorie: <b>${escapeHtml(s.category || "Algemeen")}</b></span>
             </div>
-            <p>${escapeHtml(c.content)}</p>
+
+            <div class="content">${escapeHtml(s.content || "")}</div>
+            ${tagsHtml}
+
+            <div class="divider"></div>
+            <div class="mini" id="mini-${s.id}">
+              <span>❤️ Likes: …</span>
+              <span>💬 Reacties: …</span>
+            </div>
           `;
-          listEl.appendChild(div);
-        });
 
-      } catch(err){
-        console.error(err);
-        statusEl.textContent = "Fout bij laden reacties: " + (err?.message || String(err));
+          wrapEl.appendChild(card);
+
+          // tel async, blokkeer de page niet
+          (async () => {
+            const likes = await safeCount("likes", s.id);
+            const comments = await safeCount("comments", s.id);
+            const mini = document.getElementById(`mini-${s.id}`);
+            if (mini){
+              mini.innerHTML = `
+                <span>❤️ Likes: ${likes ?? "?"}</span>
+                <span>💬 Reacties: ${comments ?? "?"}</span>
+              `;
+            }
+          })();
+        }
+
+      } catch(err) {
+        statusEl.textContent = "";
+        errorEl.textContent = "❌ " + (err?.message || String(err));
       }
     }
 
-    async function submitComment(form, storyId){
-      const msgEl = document.getElementById(`cmsg-${storyId}`);
-      msgEl.textContent = "Plaatsen...";
+    // init
+    updateAuthButton();
+    loadStories();
 
-      const author = (form.elements.author.value || "").trim();
-      const content = (form.elements.content.value || "").trim();
-
-      try{
-        const { error } = await window.supabaseClient
-          .from("comments")
-          .insert({
-            story_id: storyId,
-            author_name: author || null,
-            content
-          });
-
-        if (error) throw error;
-
-        form.reset();
-        msgEl.textContent = "✅ Geplaatst!";
-        setTimeout(() => (msgEl.textContent = ""), 1200);
-
-        await loadComments(storyId);
-        await loadCommentCount(storyId);
-
-      } catch(err){
-        console.error(err);
-        msgEl.textContent = "❌ " + (err?.message || String(err));
-      }
+    // auth state change -> update knop + reload stories
+    if (window.supabaseClient) {
+      window.supabaseClient.auth.onAuthStateChange(() => {
+        updateAuthButton();
+        loadStories();
+      });
     }
-async function updateAuthButton() {
-  const authBtn = document.getElementById("authBtn");
-  if (!authBtn || !window.supabaseClient) return;
 
-  const { data: { user } } = await window.supabaseClient.auth.getUser();
-
-  if (user) {
-    authBtn.textContent = "Profiel";
-    authBtn.href = "./profile.html";
-  } else {
-    authBtn.textContent = "Inloggen";
-    authBtn.href = "./login.html";
-  }
-}
-
-updateAuthButton();
-window.supabaseClient.auth.onAuthStateChange(() => updateAuthButton());
-
-window.addEventListener("pageshow", (e) => {
-  if (e.persisted) {
-    location.reload();
-    return;
-  }
-  updateAuthButton();
-  loadStories();
-});
+    // back-cache fix
+    window.addEventListener("pageshow", (e) => {
+      if (e.persisted) {
+        location.reload();
+        return;
+      }
+      updateAuthButton();
+      loadStories();
+    });
   </script>
 </body>
 </html>
