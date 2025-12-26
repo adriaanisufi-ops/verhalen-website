@@ -204,7 +204,7 @@
 
         const { data, error } = await window.supabaseClient
           .from("stories")
-          .select("id,title,content,author_name,created_at,category,tags")
+         .select("id,user_id,title,content,author_name,created_at,category,tags")
           .order("created_at", { ascending:false })
           .limit(50);
 
