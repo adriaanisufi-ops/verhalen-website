@@ -315,6 +315,11 @@ button[data-action="like"].liked {
     }
 
     async function toggleLike(storyId, btn){
+      // ❤️ like animatie (visueel, direct)
+btn.classList.remove("liked");
+void btn.offsetWidth; // reset animatie
+btn.classList.add("liked");
+setTimeout(() => btn.classList.remove("liked"), 450);
       okEl.textContent = "";
       errorEl.textContent = "";
 
