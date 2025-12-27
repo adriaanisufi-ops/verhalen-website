@@ -67,6 +67,25 @@
       cursor:pointer;
       user-select:none;
     }
+    /* ❤️ Like animatie */
+button[data-action="like"].liked {
+  animation: likePulse .42s ease;
+}
+
+@keyframes likePulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(251,113,133,.55);
+  }
+  55% {
+    transform: scale(1.12);
+    box-shadow: 0 0 0 14px rgba(251,113,133,0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(251,113,133,0);
+  }
+}
     .btn:hover{background:rgba(255,255,255,.09)}
     .btn:active{opacity:.92}
     .btn[disabled]{opacity:.55; cursor:not-allowed}
