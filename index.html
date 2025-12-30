@@ -12,6 +12,7 @@
   <style>
     :root{
       --bg:#0b1020;
+      --bg2:#0f1732;
       --card: rgba(255,255,255,.06);
       --text:#eef2ff;
       --muted: rgba(238,242,255,.70);
@@ -19,19 +20,20 @@
       --accent:#8b5cf6;
       --accent2:#22d3ee;
       --danger:#fb7185;
+      --ok:#34d399;
       --radius:18px;
       --shadow: 0 18px 60px rgba(0,0,0,.35);
     }
-
     *{box-sizing:border-box}
-
+    html,body{height:100%}
     body{
       margin:0;
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color:var(--text);
       background:
         radial-gradient(1200px 600px at 15% 10%, rgba(139,92,246,.30), transparent 55%),
         radial-gradient(900px 500px at 85% 20%, rgba(34,211,238,.22), transparent 55%),
+        radial-gradient(900px 500px at 50% 90%, rgba(251,113,133,.10), transparent 60%),
         var(--bg);
       min-height:100vh;
     }
@@ -39,256 +41,803 @@
     .container{max-width:1100px;margin:0 auto;padding:22px 16px 60px}
 
     .topbar{
-      display:flex;gap:14px;align-items:center;justify-content:space-between;
-      padding:14px 16px;border:1px solid var(--border);
+      display:flex; gap:14px; align-items:center; justify-content:space-between;
+      padding:14px 16px; border:1px solid var(--border);
       background:rgba(255,255,255,.05);
       border-radius:22px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(10px);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
     }
 
-    .brand-wrap{display:flex;align-items:center;gap:12px}
+    .brand-wrap{display:flex;align-items:center;gap:12px;min-width:0}
     .logo{
       width:38px;height:38px;border-radius:999px;
       display:grid;place-items:center;
       background:rgba(255,255,255,.08);
       border:1px solid rgba(255,255,255,.14);
+      flex:0 0 auto;
+      overflow:hidden;
+    }
+    .brand{min-width:0}
+    .brand h1{margin:0;font-size:18px;line-height:1.1}
+    .brand p{
+      margin:3px 0 0;color:var(--muted);font-size:13px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis
     }
 
-    .brand h1{margin:0;font-size:18px}
-    .brand p{margin:3px 0 0;color:var(--muted);font-size:13px}
-
-    .actions{display:flex;gap:10px;align-items:center}
-
+    .actions{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
     .btn{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:10px 14px;border-radius:999px;
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 14px; border-radius:999px;
       border:1px solid var(--border);
       background:rgba(255,255,255,.06);
-      color:var(--text);text-decoration:none;
-      font-weight:700;font-size:14px;
+      color:var(--text); text-decoration:none;
+      font-weight:700; font-size:14px;
       cursor:pointer;
       user-select:none;
     }
     .btn:hover{background:rgba(255,255,255,.09)}
+    .btn:disabled{opacity:.6; cursor:not-allowed}
     .btn-primary{
       border:1px solid rgba(139,92,246,.35);
-      background:linear-gradient(135deg,#8b5cf6,#22d3ee);
+      background: linear-gradient(135deg, rgba(139,92,246,.95), rgba(34,211,238,.75));
+      box-shadow: 0 14px 40px rgba(139,92,246,.20);
     }
-    .btn-danger{color:#fff;background:rgba(251,113,133,.18)}
+    .btn-danger{
+      border-color: rgba(251,113,133,.35);
+      background: rgba(251,113,133,.12);
+      color: #ffd7de;
+    }
 
-    .status{margin:14px 6px 0;color:var(--muted)}
-    .error{margin:10px 6px 0;color:var(--danger);font-weight:700}
+    .status{margin:14px 6px 0;color:var(--muted);font-size:14px}
+    .error{margin:10px 6px 0;color:var(--danger);font-weight:800;white-space:pre-wrap}
+    .ok{margin:10px 6px 0;color:var(--ok);font-weight:800;white-space:pre-wrap}
 
-    /* ===== Layout ===== */
+    /* ====== Layout met sidebar ====== */
     .layout{
       margin-top:16px;
       display:grid;
-      grid-template-columns:260px 1fr;
+      grid-template-columns: 260px 1fr;
       gap:14px;
       align-items:start;
     }
 
     .sidebar{
-      position:sticky;
-      top:18px;
-      background:rgba(255,255,255,.05);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:14px;
-      box-shadow:0 12px 40px rgba(0,0,0,.18);
-      backdrop-filter:blur(10px);
+      position: sticky;
+      top: 18px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.18);
+      backdrop-filter: blur(10px);
     }
 
-    .sb-title{font-size:14px;color:var(--muted);font-weight:700}
+    .sb-title{
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
     .input{
-      width:100%;margin-top:8px;
-      padding:10px 12px;border-radius:12px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.18);
-      color:var(--text);
+      width:100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      outline: none;
     }
+    .input::placeholder{ color: rgba(238,242,255,.55); }
 
-    .sb-group{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .sb-group{ margin-top: 12px; display:flex; flex-direction:column; gap:8px; }
+    .sb-small{ font-weight:700; color: rgba(238,242,255,.65); font-size:12px; }
 
     .sb-chip{
-      padding:10px 12px;border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.04);
-      font-weight:700;font-size:13px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
       cursor:pointer;
+      user-select:none;
+      font-weight:800;
+      font-size: 13px;
     }
-    .sb-chip.active{border-color:var(--accent)}
+    .sb-chip:hover{ background: rgba(255,255,255,.07); }
+    .sb-chip.active{
+      border-color: rgba(139,92,246,.45);
+      box-shadow: 0 0 0 2px rgba(139,92,246,.12);
+    }
 
+    /* ====== Cards ====== */
     .grid{display:grid;gap:14px}
-
     .card{
       background:var(--card);
+      will-change: transform;
       border:1px solid var(--border);
       border-radius:var(--radius);
-      padding:14px;
-      box-shadow:0 12px 40px rgba(0,0,0,.22);
-      transition:.25s;
+      padding:14px 14px 12px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.22);
+      backdrop-filter: blur(10px);
+      transition: transform .25s ease, box-shadow .25s ease;
     }
-    .card:hover{transform:translateY(-4px);box-shadow:0 26px 70px rgba(0,0,0,.45)}
+    .card:hover{
+      transform: translateY(-4px);
+      box-shadow: 0 26px 70px rgba(0,0,0,.45);
+    }
+    .card:active{ transform: translateY(-2px) scale(0.99); }
 
-    .meta{display:flex;gap:12px;align-items:center;color:var(--muted);font-size:13px}
+    .meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;color:var(--muted);font-size:13px;margin-top:6px}
+    .meta2{display:flex;gap:12px;align-items:center}
+
     .avatar{
-      width:38px;height:38px;border-radius:999px;
+      width:34px;height:34px;border-radius:999px;
       display:grid;place-items:center;
-      font-weight:800;
-      background:linear-gradient(135deg,#8b5cf6,#22d3ee);
-      color:#fff;
+      background: linear-gradient(135deg, rgba(139,92,246,.95), rgba(34,211,238,.75));
+      border:1px solid rgba(255,255,255,.16);
+      font-weight:900;
+      color:#0b1020;
+      flex:0 0 auto;
     }
 
-    .title{margin:10px 0 0;font-size:18px}
-    .content{margin-top:10px;white-space:pre-wrap;line-height:1.65}
+    .title{margin:6px 0 0;font-size:16px}
+    .content{margin:10px 0 0;white-space:pre-wrap;line-height:1.65}
 
-    .divider{height:1px;background:rgba(255,255,255,.1);margin:12px 0}
-    .mini{display:flex;gap:14px;color:var(--muted);font-size:13px}
-    .row-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:10px}
+    .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .tag{
+      font-size:12px;color:rgba(238,242,255,.85);
+      padding:5px 9px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+    }
 
-    @media(max-width:860px){
-      .layout{grid-template-columns:1fr}
-      .sidebar{position:relative}
+    .badge{
+      font-size:12px;
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:rgba(238,242,255,.9);
+      font-weight:800;
+    }
+    .badge.cat-algemeen{ border-color: rgba(139,92,246,.40); box-shadow:0 0 0 2px rgba(139,92,246,.10); }
+    .badge.cat-filosofie{ border-color: rgba(34,211,238,.40); box-shadow:0 0 0 2px rgba(34,211,238,.10); }
+    .badge.cat-persoonlijk{ border-color: rgba(52,211,153,.35); box-shadow:0 0 0 2px rgba(52,211,153,.10); }
+    .badge.cat-poezie{ border-color: rgba(251,113,133,.35); box-shadow:0 0 0 2px rgba(251,113,133,.10); }
+
+    .divider{height:1px;background:rgba(255,255,255,.10);margin:12px 0}
+    .mini{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:13px;align-items:center}
+    .row-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:10px}
+
+    /* Like animatie */
+    .btn.liked{
+      animation: pop .45s ease;
+      box-shadow: 0 0 0 2px rgba(251,113,133,.12);
+      border-color: rgba(251,113,133,.35);
+      background: rgba(251,113,133,.12);
+    }
+    @keyframes pop{
+      0%{transform:scale(1)}
+      40%{transform:scale(1.06)}
+      100%{transform:scale(1)}
+    }
+
+    /* Comments box */
+    .comments{
+      margin-top:10px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      padding:10px;
+      background: rgba(0,0,0,.18);
+      display:none;
+    }
+    .comments.open{display:block}
+    .c-list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+    .c-item{display:flex;gap:10px;align-items:flex-start}
+    .c-text{font-size:13px;line-height:1.5;color:rgba(238,242,255,.90)}
+    .c-meta{font-size:12px;color:rgba(238,242,255,.60)}
+    .c-form{display:flex;gap:10px;margin-top:10px}
+    .c-form .input{flex:1}
+
+    /* mobiel: sidebar boven content */
+    @media (max-width: 860px){
+      .layout{ grid-template-columns: 1fr; }
+      .sidebar{ position: relative; top: 0; }
     }
   </style>
 </head>
 
 <body>
-<div class="container">
+  <div class="container">
 
-  <div class="topbar">
-    <div class="brand-wrap">
-      <div class="logo">☯</div>
-      <div class="brand">
-        <h1>Verhalen</h1>
-        <p>Lees, deel, like en reageer — met respect.</p>
-      </div>
-    </div>
-    <div class="actions">
-      <a class="btn" id="authBtn" href="login.html">Inloggen</a>
-      <a class="btn btn-primary" href="deel.html">Deel jouw verhaal</a>
-    </div>
-  </div>
+    <div class="topbar">
+      <div class="brand-wrap">
+        <!-- Panda logo -->
+        <div class="logo" title="Panda">
+          <svg viewBox="0 0 64 64" width="26" height="26" aria-hidden="true">
+            <circle cx="18" cy="16" r="10" fill="#111827"/>
+            <circle cx="46" cy="16" r="10" fill="#111827"/>
+            <circle cx="32" cy="34" r="22" fill="#F9FAFB"/>
+            <ellipse cx="24" cy="34" rx="8" ry="10" fill="#111827"/>
+            <ellipse cx="40" cy="34" rx="8" ry="10" fill="#111827"/>
+            <circle cx="24" cy="34" r="3" fill="#F9FAFB"/>
+            <circle cx="40" cy="34" r="3" fill="#F9FAFB"/>
+            <circle cx="24" cy="34" r="1.2" fill="#111827"/>
+            <circle cx="40" cy="34" r="1.2" fill="#111827"/>
+            <path d="M29 41c2 2 4 2 6 0" stroke="#111827" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+            <path d="M30 38c1.5 1.3 2.5 1.3 4 0" stroke="#111827" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </svg>
+        </div>
 
-  <div id="status" class="status">Verhalen laden…</div>
-  <div id="error" class="error"></div>
-
-  <div class="layout">
-
-    <aside class="sidebar">
-      <div class="sb-title">Ontdekken</div>
-      <input id="searchInput" class="input" placeholder="Zoek verhalen…">
-
-      <div class="sb-group" id="catChips">
-        <div class="sb-chip active" data-cat="all">Alle</div>
-        <div class="sb-chip" data-cat="Algemeen">Algemeen</div>
-        <div class="sb-chip" data-cat="Filosofie">Filosofie</div>
-        <div class="sb-chip" data-cat="Persoonlijk">Persoonlijk</div>
-      </div>
-    </aside>
-
-    <div id="stories" class="grid"></div>
-  </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase.js"></script>
-
-<script>
-const statusEl=document.getElementById("status");
-const errorEl=document.getElementById("error");
-const wrapEl=document.getElementById("stories");
-
-let ALL_STORIES=[];
-let activeCategory="all";
-
-function escapeHtml(s){return (s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-
-function formatDate(d){return new Date(d).toLocaleString("nl-NL")}
-
-function renderStories(list){
-  wrapEl.innerHTML="";
-  if(!list.length){statusEl.textContent="Geen verhalen gevonden.";return}
-  statusEl.textContent="";
-  for(const s of list){
-    const card=document.createElement("div");
-    card.className="card";
-    card.innerHTML=`
-      <div class="meta">
-        <div class="avatar">${escapeHtml((s.author_name||"A")[0].toUpperCase())}</div>
-        <div>
-          <b>${escapeHtml(s.author_name||"Anoniem")}</b><br>
-          ${formatDate(s.created_at)} • ${escapeHtml(s.category||"Algemeen")}
+        <div class="brand">
+          <h1>Verhalen</h1>
+          <p>Lees, deel, like en reageer — met respect.</p>
         </div>
       </div>
-      <h2 class="title">${escapeHtml(s.title||"Zonder titel")}</h2>
-      <div class="content">${escapeHtml(s.content||"")}</div>
-      <div class="divider"></div>
-      <div class="mini">
-        ❤️ Likes • 💬 Reacties
+
+      <div class="actions">
+        <a class="btn" id="authBtn" href="./login.html">Inloggen</a>
+        <a class="btn btn-primary" href="./deel.html">Deel jouw verhaal</a>
       </div>
-      <div class="row-actions">
-        <button class="btn">❤️ Like</button>
-        <button class="btn">💬 Reacties</button>
-      </div>
-    `;
-    wrapEl.appendChild(card);
-  }
-}
+    </div>
 
-function applyFilters(){
-  const q=document.getElementById("searchInput").value.toLowerCase();
-  let f=ALL_STORIES;
-  if(activeCategory!=="all")f=f.filter(s=>(s.category||"Algemeen")===activeCategory);
-  if(q)f=f.filter(s=>(s.title+s.content+s.author_name).toLowerCase().includes(q));
-  renderStories(f);
-}
+    <div id="status" class="status">Verhalen laden…</div>
+    <div id="error" class="error"></div>
+    <div id="ok" class="ok"></div>
 
-async function loadStories(){
-  const {data}=await supabaseClient.from("stories").select("*").order("created_at",{ascending:false});
-  ALL_STORIES=data||[];
-  renderStories(ALL_STORIES);
-}
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sb-title">Ontdekken</div>
 
-document.getElementById("searchInput").addEventListener("input",applyFilters);
-document.getElementById("catChips").addEventListener("click",e=>{
-  const c=e.target.closest(".sb-chip"); if(!c)return;
-  document.querySelectorAll(".sb-chip").forEach(x=>x.classList.remove("active"));
-  c.classList.add("active"); activeCategory=c.dataset.cat; applyFilters();
-});
+        <input id="q" class="input" placeholder="Zoek verhalen…" />
 
-  async function updateAuthButton(){
-  const authBtn = document.getElementById("authBtn");
-  if (!authBtn || !window.supabaseClient) return;
+        <div class="sb-group" id="catGroup">
+          <div class="sb-chip active" data-cat="Alle">Alle</div>
+          <div class="sb-chip" data-cat="Algemeen">Algemeen</div>
+          <div class="sb-chip" data-cat="Filosofie">Filosofie</div>
+          <div class="sb-chip" data-cat="Persoonlijk">Persoonlijk</div>
+          <div class="sb-chip" data-cat="Poëzie">Poëzie</div>
+        </div>
 
-  const { data: { user } } = await window.supabaseClient.auth.getUser();
+        <div class="sb-group" id="sortGroup" style="margin-top:14px">
+          <div class="sb-small">Sorteren</div>
+          <div class="sb-chip active" data-sort="new">🕒 Nieuwste</div>
+          <div class="sb-chip" data-sort="top">❤️ Meest geliket</div>
+        </div>
 
-  if (user) {
-    authBtn.textContent = "Profiel";
-    authBtn.href = "profile.html";
-  } else {
-    authBtn.textContent = "Inloggen";
-    authBtn.href = "login.html";
-  }
-}
+        <div class="sb-group" style="margin-top:14px">
+          <div class="sb-small">Tip</div>
+          <div style="font-size:12px;color:rgba(238,242,255,.65);line-height:1.5">
+            Klik op <b>Reacties</b> om een thread te openen. Likes & reacties werken pas als je bent ingelogd.
+          </div>
+        </div>
+      </aside>
 
-// 1️⃣ Bij eerste paginalaad
-updateAuthButton();
-loadStories();
+      <div id="stories" class="grid"></div>
+    </div>
+  </div>
 
-// 2️⃣ Als login / logout gebeurt
-window.supabaseClient.auth.onAuthStateChange(() => {
-  updateAuthButton();
-  loadStories();
-});
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
 
-// 3️⃣ Als je via "terug" komt (browser cache)
-window.addEventListener("pageshow", () => {
-  updateAuthButton();
-  loadStories();
-});
-</script>
+  <script>
+    // ===== Globals =====
+    const statusEl = document.getElementById("status");
+    const errorEl  = document.getElementById("error");
+    const okEl     = document.getElementById("ok");
+    const wrapEl   = document.getElementById("stories");
+
+    const qEl = document.getElementById("q");
+    const catGroup = document.getElementById("catGroup");
+    const sortGroup = document.getElementById("sortGroup");
+
+    let CURRENT_USER = null;
+    let ALL_STORIES = [];
+    let activeCategory = "Alle";
+    let activeSort = "new";
+    let activeQuery = "";
+
+    function setOk(msg){
+      okEl.textContent = msg || "";
+      if (msg) setTimeout(() => okEl.textContent = "", 1600);
+    }
+    function setErr(msg){
+      errorEl.textContent = msg || "";
+    }
+
+    function escapeHtml(str){
+      return (str ?? "").replace(/[&<>"']/g, (m) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    function formatDate(iso){
+      try{
+        return new Date(iso).toLocaleString("nl-NL", { dateStyle:"medium", timeStyle:"short" });
+      }catch(e){ return ""; }
+    }
+
+    function catClass(cat){
+      const c = (cat || "Algemeen").toLowerCase();
+      if (c.includes("filo")) return "cat-filosofie";
+      if (c.includes("pers")) return "cat-persoonlijk";
+      if (c.includes("po"))   return "cat-poezie";
+      return "cat-algemeen";
+    }
+
+    async function refreshUser(){
+      if (!window.supabaseClient) return null;
+      const { data: { user } } = await window.supabaseClient.auth.getUser();
+      CURRENT_USER = user || null;
+      return CURRENT_USER;
+    }
+
+    async function updateAuthButton(){
+      const authBtn = document.getElementById("authBtn");
+      if (!authBtn) return;
+
+      if (!window.supabaseClient){
+        authBtn.textContent = "Inloggen";
+        authBtn.href = "./login.html";
+        return;
+      }
+
+      // gebruik CURRENT_USER als die al gezet is, anders ophalen
+      const user = CURRENT_USER || (await refreshUser());
+
+      if (user){
+        authBtn.textContent = "Profiel";
+        authBtn.href = "./profile.html";
+      }else{
+        authBtn.textContent = "Inloggen";
+        authBtn.href = "./login.html";
+      }
+    }
+
+    // ===== Data helpers =====
+    async function count(table, storyId){
+      const { count, error } = await window.supabaseClient
+        .from(table)
+        .select("*", { count:"exact", head:true })
+        .eq("story_id", storyId);
+      if (error) return 0;
+      return count ?? 0;
+    }
+
+    async function didILike(storyId){
+      if (!CURRENT_USER) return false;
+      const { data, error } = await window.supabaseClient
+        .from("likes")
+        .select("id")
+        .eq("story_id", storyId)
+        .eq("user_id", CURRENT_USER.id)
+        .limit(1);
+
+      if (error) return false;
+      return Array.isArray(data) && data.length > 0;
+    }
+
+    async function toggleLike(storyId, btn){
+      setErr(""); okEl.textContent = "";
+
+      // animatie direct (ook als hij daarna faalt)
+      btn.classList.remove("liked"); void btn.offsetWidth; btn.classList.add("liked");
+      setTimeout(() => btn.classList.remove("liked"), 450);
+
+      if (!CURRENT_USER){
+        setErr("❌ Log in om te liken.");
+        return;
+      }
+
+      btn.disabled = true;
+      try{
+        const liked = await didILike(storyId);
+        if (liked){
+          const { error } = await window.supabaseClient
+            .from("likes")
+            .delete()
+            .eq("story_id", storyId)
+            .eq("user_id", CURRENT_USER.id);
+          if (error) throw error;
+        }else{
+          const { error } = await window.supabaseClient
+            .from("likes")
+            .insert({ story_id: storyId, user_id: CURRENT_USER.id });
+          if (error) throw error;
+        }
+
+        await refreshMini(storyId);
+      }catch(err){
+        setErr("❌ " + (err?.message || String(err)));
+      }finally{
+        btn.disabled = false;
+      }
+    }
+
+    async function loadComments(storyId){
+      const box = document.getElementById("comments-"+storyId);
+      const list = document.getElementById("c-list-"+storyId);
+      if (!box || !list) return;
+
+      list.innerHTML = `<div class="c-meta">Laden…</div>`;
+
+      const { data, error } = await window.supabaseClient
+        .from("comments")
+        .select("id,user_id,author_name,content,created_at")
+        .eq("story_id", storyId)
+        .order("created_at", { ascending:true });
+
+      if (error){
+        list.innerHTML = `<div class="c-meta">❌ ${escapeHtml(error.message)}</div>`;
+        return;
+      }
+
+      if (!data || data.length === 0){
+        list.innerHTML = `<div class="c-meta">Nog geen reacties. Wees de eerste 🙂</div>`;
+        return;
+      }
+
+      list.innerHTML = "";
+      for (const c of data){
+        const av = escapeHtml((c.author_name || "A")[0].toUpperCase());
+        const who = escapeHtml(c.author_name || "Anoniem");
+        const when = formatDate(c.created_at);
+        const txt = escapeHtml(c.content || "");
+
+        const row = document.createElement("div");
+        row.className = "c-item";
+        row.innerHTML = `
+          <div class="avatar" style="width:28px;height:28px;font-size:12px">${av}</div>
+          <div>
+            <div class="c-meta"><b>${who}</b> • ${when}</div>
+            <div class="c-text">${txt}</div>
+          </div>
+        `;
+        list.appendChild(row);
+      }
+    }
+
+    async function addComment(storyId){
+      setErr(""); okEl.textContent = "";
+
+      if (!CURRENT_USER){
+        setErr("❌ Log in om te reageren.");
+        return;
+      }
+
+      const input = document.getElementById("c-input-"+storyId);
+      if (!input) return;
+
+      const text = (input.value || "").trim();
+      if (!text){
+        setErr("❌ Je reactie is leeg.");
+        return;
+      }
+
+      input.disabled = true;
+
+      try{
+        // naam: eerst user_metadata.full_name als die bestaat, anders email prefix
+        const name =
+          (CURRENT_USER.user_metadata && (CURRENT_USER.user_metadata.full_name || CURRENT_USER.user_metadata.name)) ||
+          (CURRENT_USER.email ? CURRENT_USER.email.split("@")[0] : "Gebruiker");
+
+        const { error } = await window.supabaseClient
+          .from("comments")
+          .insert({
+            story_id: storyId,
+            user_id: CURRENT_USER.id,
+            author_name: name,
+            content: text
+          });
+
+        if (error) throw error;
+
+        input.value = "";
+        setOk("✅ Reactie geplaatst!");
+        await loadComments(storyId);
+        await refreshMini(storyId);
+
+      }catch(err){
+        setErr("❌ " + (err?.message || String(err)));
+      }finally{
+        input.disabled = false;
+      }
+    }
+
+    async function deleteStory(storyId){
+      setErr(""); okEl.textContent = "";
+
+      if (!CURRENT_USER){
+        setErr("❌ Log in om te verwijderen.");
+        return;
+      }
+
+      if (!confirm("Weet je zeker dat je dit verhaal wilt verwijderen?")) return;
+
+      try{
+        const { error } = await window.supabaseClient
+          .from("stories")
+          .delete()
+          .eq("id", storyId)
+          .eq("user_id", CURRENT_USER.id);
+
+        if (error) throw error;
+
+        setOk("✅ Verhaal verwijderd.");
+        await loadStories(); // reload alles
+      }catch(err){
+        setErr("❌ " + (err?.message || String(err)) + "\nTip: als je een fout krijgt, moeten likes/comments misschien cascade in de database.");
+      }
+    }
+
+    async function refreshMini(storyId){
+      const mini = document.getElementById("mini-"+storyId);
+      if (!mini) return;
+
+      const likes = await count("likes", storyId);
+      const comments = await count("comments", storyId);
+
+      const likeHint = CURRENT_USER ? "" : " (log in om te liken)";
+      mini.innerHTML = `
+        <span>❤️ Likes: ${likes}</span>
+        <span>💬 Reacties: ${comments}${likeHint}</span>
+      `;
+    }
+
+    // ===== Rendering + Filters =====
+    function applyFilters(){
+      const q = (activeQuery || "").toLowerCase();
+
+      let list = [...ALL_STORIES];
+
+      if (activeCategory && activeCategory !== "Alle"){
+        list = list.filter(s => (s.category || "Algemeen") === activeCategory);
+      }
+
+      if (q){
+        list = list.filter(s => {
+          const t = (s.title || "").toLowerCase();
+          const c = (s.content || "").toLowerCase();
+          const a = (s.author_name || "").toLowerCase();
+          const tags = Array.isArray(s.tags) ? s.tags.join(" ").toLowerCase() : "";
+          return t.includes(q) || c.includes(q) || a.includes(q) || tags.includes(q);
+        });
+      }
+
+      if (activeSort === "top"){
+        // sorteer op like_count (meegegeven bij loadStories)
+        list.sort((a,b) => (b.like_count||0) - (a.like_count||0));
+      }else{
+        // newest
+        list.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+      }
+
+      renderStories(list);
+    }
+
+    function renderStories(data){
+      wrapEl.innerHTML = "";
+
+      if (!data || data.length === 0){
+        statusEl.textContent = "Geen resultaten.";
+        return;
+      }
+      statusEl.textContent = "";
+
+      for (const s of data){
+        const canDelete = !!(CURRENT_USER && s.user_id && s.user_id === CURRENT_USER.id);
+
+        const tags = Array.isArray(s.tags) ? s.tags : [];
+        const tagsHtml = tags.length
+          ? `<div class="tags">${tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join("")}</div>`
+          : "";
+
+        const av = escapeHtml((s.author_name || "A")[0].toUpperCase());
+        const cat = escapeHtml(s.category || "Algemeen");
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="meta2">
+            <div class="avatar">${av}</div>
+            <div style="min-width:0">
+              <div style="font-weight:900">${escapeHtml(s.author_name || "Anoniem")}</div>
+              <div class="meta" style="margin:2px 0 0">
+                <span>${formatDate(s.created_at)}</span>
+                <span class="badge ${catClass(s.category)}">Categorie: ${cat}</span>
+              </div>
+            </div>
+          </div>
+
+          <h2 class="title">${escapeHtml(s.title || "Zonder titel")}</h2>
+          <div class="content">${escapeHtml(s.content || "")}</div>
+          ${tagsHtml}
+
+          <div class="divider"></div>
+
+          <div class="mini" id="mini-${s.id}">
+            <span>❤️ Likes: ${s.like_count ?? "…"}</span>
+            <span>💬 Reacties: ${s.comment_count ?? "…"}</span>
+            ${CURRENT_USER ? "" : `<span style="opacity:.75">(log in om te liken/reageren)</span>`}
+          </div>
+
+          <div class="row-actions">
+            <button class="btn" data-action="like" data-id="${s.id}">❤️ Like</button>
+            <button class="btn" data-action="toggle-comments" data-id="${s.id}">💬 Reacties</button>
+            ${canDelete ? `<button class="btn btn-danger" data-action="delete" data-id="${s.id}">🗑️ Verwijderen</button>` : ``}
+          </div>
+
+          <div class="comments" id="comments-${s.id}">
+            <div class="c-meta">Reacties</div>
+            <div class="c-list" id="c-list-${s.id}"></div>
+
+            <div class="c-form">
+              <input class="input" id="c-input-${s.id}" placeholder="Schrijf een reactie…" />
+              <button class="btn btn-primary" data-action="send-comment" data-id="${s.id}">Plaatsen</button>
+            </div>
+          </div>
+        `;
+
+        wrapEl.appendChild(card);
+      }
+    }
+
+    async function loadStories(){
+      setErr(""); okEl.textContent = "";
+      statusEl.textContent = "Verhalen laden…";
+      wrapEl.innerHTML = "";
+
+      try{
+        if (!window.supabaseClient){
+          throw new Error("Supabase client niet geladen. Check supabase.js.");
+        }
+
+        // stories
+        const { data: stories, error } = await window.supabaseClient
+          .from("stories")
+          .select("id,user_id,title,content,author_name,created_at,category,tags")
+          .order("created_at", { ascending:false })
+          .limit(100);
+
+        if (error) throw error;
+
+        if (!stories || stories.length === 0){
+          statusEl.textContent = "Nog geen verhalen. Klik op ‘Deel jouw verhaal’ om de eerste te plaatsen.";
+          ALL_STORIES = [];
+          return;
+        }
+
+        // counts in 2 snelle queries (in plaats van per kaart)
+        const ids = stories.map(s => s.id);
+
+        // likes: haal alle likes voor deze stories, tel in JS
+        const { data: likesData, error: lErr } = await window.supabaseClient
+          .from("likes")
+          .select("story_id")
+          .in("story_id", ids);
+
+        if (lErr) throw lErr;
+
+        const likeMap = new Map();
+        for (const r of (likesData || [])){
+          likeMap.set(r.story_id, (likeMap.get(r.story_id) || 0) + 1);
+        }
+
+        // comments
+        const { data: comData, error: cErr } = await window.supabaseClient
+          .from("comments")
+          .select("story_id")
+          .in("story_id", ids);
+
+        if (cErr) throw cErr;
+
+        const comMap = new Map();
+        for (const r of (comData || [])){
+          comMap.set(r.story_id, (comMap.get(r.story_id) || 0) + 1);
+        }
+
+        ALL_STORIES = stories.map(s => ({
+          ...s,
+          like_count: likeMap.get(s.id) || 0,
+          comment_count: comMap.get(s.id) || 0
+        }));
+
+        statusEl.textContent = "";
+        applyFilters();
+
+      }catch(err){
+        statusEl.textContent = "";
+        setErr("❌ " + (err?.message || String(err)));
+      }
+    }
+
+    // ===== Sidebar interactions =====
+    qEl.addEventListener("input", () => {
+      activeQuery = qEl.value || "";
+      applyFilters();
+    });
+
+    catGroup.addEventListener("click", (e) => {
+      const chip = e.target.closest(".sb-chip");
+      if (!chip) return;
+      document.querySelectorAll("#catGroup .sb-chip").forEach(x => x.classList.remove("active"));
+      chip.classList.add("active");
+      activeCategory = chip.dataset.cat || "Alle";
+      applyFilters();
+    });
+
+    sortGroup.addEventListener("click", (e) => {
+      const chip = e.target.closest(".sb-chip");
+      if (!chip) return;
+      document.querySelectorAll("#sortGroup .sb-chip").forEach(x => x.classList.remove("active"));
+      chip.classList.add("active");
+      activeSort = chip.dataset.sort || "new";
+      applyFilters();
+    });
+
+    // ===== Buttons (Like / Reacties / Delete) =====
+    document.addEventListener("click", async (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+
+      const action = btn.dataset.action;
+      const storyId = btn.dataset.id;
+
+      if (!storyId) return;
+
+      if (action === "like") {
+        return toggleLike(storyId, btn);
+      }
+
+      if (action === "toggle-comments") {
+        const box = document.getElementById("comments-"+storyId);
+        if (!box) return;
+        box.classList.toggle("open");
+        if (box.classList.contains("open")){
+          await loadComments(storyId);
+        }
+        return;
+      }
+
+      if (action === "send-comment") {
+        return addComment(storyId);
+      }
+
+      if (action === "delete") {
+        return deleteStory(storyId);
+      }
+    });
+
+    // ===== Init / auth / back-cache =====
+    (async () => {
+      await refreshUser();
+      await updateAuthButton();
+      await loadStories();
+
+      if (window.supabaseClient){
+        window.supabaseClient.auth.onAuthStateChange(async () => {
+          await refreshUser();
+          await updateAuthButton();
+          await loadStories();
+        });
+      }
+    })();
+
+    window.addEventListener("pageshow", async () => {
+      // als je via "terug" komt, zorg dat alles opnieuw klopt
+      await refreshUser();
+      await updateAuthButton();
+      await loadStories();
+    });
+  </script>
 </body>
 </html>
