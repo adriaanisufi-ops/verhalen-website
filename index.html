@@ -18,9 +18,9 @@
 }
 
 .panda-side img{
-  width:64px;
+  width:120px;          /* groter */
   height:auto;
-  filter: drop-shadow(0 8px 18px rgba(0,0,0,.45));
+  filter: drop-shadow(0 10px 26px rgba(0,0,0,.55));
 }
     :root{
       --bg:#0b1020;
@@ -75,11 +75,15 @@
   background:#fff;
   border: 1px solid rgba(255,255,255,.25);
 }
-.logo img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
+    /* Yin-Yang draai animatie */
+.yy{
+  animation: spin 10s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes spin{
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
     .brand{min-width:0}
     .brand h1{margin:0;font-size:18px;line-height:1.1}
@@ -283,8 +287,15 @@
     <div class="topbar">
       <div class="brand-wrap">
         <!-- Panda logo -->
-    <a class="logo" href="./index.html" title="Verhalen">
-  <img src="./panda.png" alt="Panda logo">
+<a class="logo" href="./index.html" title="Verhalen">
+  <svg class="yy" viewBox="0 0 100 100" width="40" height="40" aria-hidden="true">
+    <circle cx="50" cy="50" r="48" fill="white"/>
+    <path d="M50 2 a48 48 0 1 0 0 96
+             a24 24 0 1 1 0-48
+             a24 24 0 1 0 0-48" fill="black"/>
+    <circle cx="50" cy="26" r="6" fill="white"/>
+    <circle cx="50" cy="74" r="6" fill="black"/>
+  </svg>
 </a>
         <div class="brand">
           <h1>Verhalen</h1>
