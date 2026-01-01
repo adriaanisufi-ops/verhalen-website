@@ -701,74 +701,78 @@
       }
     }
 
-    async function loadStories(){
-      setErr(""); okEl.textContent = "";
-      statusEl.textContent = "Verhalen laden…";
-      wrapEl.innerHTML = "";
+   async function loadStories(){
+  setErr(""); okEl.textContent = "";
+  statusEl.textContent = "Verhalen laden…";
+  wrapEl.innerHTML = "";
 
-      try{
-        if (!window.supabaseClient){
-          throw new Error("Supabase client niet geladen. Check supabase.js.");
-        }
-
-        // stories
-        const { data: stories, error } = await window.supabaseClient
-          .from("stories")
-          .select("id,user_id,title,content,author_name,created_at,category,tags")
-          .order("created_at", { ascending:false })
-          .limit(100);
-
-        if (error) throw error;
-
-        if (!stories || stories.length === 0){
-          statusEl.textContent = "Nog geen verhalen. Klik op ‘Deel jouw verhaal’ om de eerste te plaatsen.";
-          ALL_STORIES = [];
-          return;
-        }
-
-        // counts in 2 snelle queries (in plaats van per kaart)
-        const ids = stories.map(s => s.id);
-
-        // likes: haal alle likes voor deze stories, tel in JS
-        const { data: likesData, error: lErr } = await window.supabaseClient
-          .from("likes")
-          .select("story_id")
-          .in("story_id", ids);
-
-        if (lErr) throw lErr;
-
-        const likeMap = new Map();
-        for (const r of (likesData || [])){
-          likeMap.set(r.story_id, (likeMap.get(r.story_id) || 0) + 1);
-        }
-
-        // comments
-        const { data: comData, error: cErr } = await window.supabaseClient
-          .from("comments")
-          .select("story_id")
-          .in("story_id", ids);
-
-        if (cErr) throw cErr;
-
-        const comMap = new Map();
-        for (const r of (comData || [])){
-          comMap.set(r.story_id, (comMap.get(r.story_id) || 0) + 1);
-        }
-
-        ALL_STORIES = stories.map(s => ({
-          ...s,
-          like_count: likeMap.get(s.id) || 0,
-          comment_count: comMap.get(s.id) || 0
-        }));
-
-        statusEl.textContent = "";
-        applyFilters();
-
-      }catch(err){
-        statusEl.textContent = "";
-        setErr("❌ " + (err?.message || String(err)));
-      }
+  try{
+    if (!window.supabaseClient){
+      throw new Error("Supabase client niet geladen. Check supabase.js.");
     }
+
+    const { data: stories, error } = await window.supabaseClient
+      .from("stories")
+      .select("id,user_id,title,content,author_name,created_at,category,tags")
+      .order("created_at", { ascending:false })
+      .limit(100);
+
+    if (error) throw error;
+
+    if (!stories || stories.length === 0){
+      statusEl.textContent = "Nog geen verhalen. Klik op ‘Deel jouw verhaal’ om de eerste te plaatsen.";
+      ALL_STORIES = [];
+      return;
+    }
+
+    const ids = stories.map(s => s.id);
+
+    // ✅ Likes: als RLS het blokkeert -> niet crashen, gewoon 0 likes tonen
+    let likesData = [];
+    const likesRes = await window.supabaseClient
+      .from("likes")
+      .select("story_id")
+      .in("story_id", ids);
+
+    if (!likesRes.error && Array.isArray(likesRes.data)) {
+      likesData = likesRes.data;
+    }
+
+    const likeMap = new Map();
+    for (const r of likesData){
+      likeMap.set(r.story_id, (likeMap.get(r.story_id) || 0) + 1);
+    }
+
+    // ✅ Comments: idem
+    let comData = [];
+    const comRes = await window.supabaseClient
+      .from("comments")
+      .select("story_id")
+      .in("story_id", ids);
+
+    if (!comRes.error && Array.isArray(comRes.data)) {
+      comData = comRes.data;
+    }
+
+    const comMap = new Map();
+    for (const r of comData){
+      comMap.set(r.story_id, (comMap.get(r.story_id) || 0) + 1);
+    }
+
+    ALL_STORIES = stories.map(s => ({
+      ...s,
+      like_count: likeMap.get(s.id) || 0,
+      comment_count: comMap.get(s.id) || 0
+    }));
+
+    statusEl.textContent = "";
+    applyFilters();
+
+  }catch(err){
+    statusEl.textContent = "";
+    setErr("❌ " + (err?.message || String(err)));
+  }
+}
 
     // ===== Sidebar interactions =====
     qEl.addEventListener("input", () => {
