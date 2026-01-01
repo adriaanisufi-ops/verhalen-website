@@ -71,6 +71,27 @@ body{
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
+
+      /* Zachte donker-fade onderaan (maakt de onderkant overal gelijk) */
+body::before{
+  content:"";
+  position: fixed;
+  inset: 0;
+  pointer-events:none;
+  background: linear-gradient(
+    to bottom,
+    rgba(11,16,32,0) 55%,
+    rgba(11,16,32,.65) 82%,
+    rgba(11,16,32,1) 100%
+  );
+  z-index: 0;
+}
+
+/* Zorg dat je content boven de overlay blijft */
+.container{
+  position: relative;
+  z-index: 1;
+}
       margin:0;
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
       color:var(--text);
